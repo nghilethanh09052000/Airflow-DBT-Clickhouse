@@ -23,14 +23,13 @@ jobs:
       with:
         ssh-private-key: ${{ env.SSH_PRIVATE_KEY }}
 
-    - name: Activate Python virtual environment
+    - name: Sync requirements.txt and install Python packages
       run: |
-        ssh -o StrictHostKeyChecking=no ${{ env.SSH_USER_HOST }} "source /root/airflow/.venv/bin/activate"
+        rsync -avz -e "ssh -o StrictHostKeyChecking=no" ./requirements.txt ${{ env.SSH_USER_HOST }}:/root/airflow/requirements.txt \
+        && ssh -o StrictHostKeyChecking=no ${{ env.SSH_USER_HOST }} "source /root/airflow/.venv/bin/activate && pip install -r /root/airflow/requirements.txt"
 
-    - name: Sync requirements.txt to VM
+    - name: Sync Dags Folder
       run: |
-        rsync -avz -e "ssh -o StrictHostKeyChecking=no" ./requirements.txt ${{ env.SSH_USER_HOST }}:/root/airflow/requirements.txt
-
-    - name: Install Python packages
-      run: |
-        ssh -o StrictHostKeyChecking=no ${{ env.SSH_USER_HOST }} "pip install -r /root/airflow/requirements.txt"
+        rsync -avz -e "ssh -o StrictHostKeyChecking=no" ./dags ${{ env.SSH_USER_HOST }}:/root/airflow/dags
+         
+      
