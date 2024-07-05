@@ -32,8 +32,6 @@ x-airflow-common:
     - ./logs:/opt/airflow/logs
     - ./plugins:/opt/airflow/plugins
     - ./data:/opt/airflow/data
-    - ./airflow.cfg:/opt/airflow/airflow.cfg
-    - ./webserver_config.py:/opt/airflow/webserver_config.py
 
   depends_on:
     redis:
@@ -111,10 +109,7 @@ services:
     command: |
         bash -c "
           airflow db upgrade
-          airflow connections import /opt/airflow/data/config/connections.json
-          airflow variables import /opt/airflow/data/config/variables.json
           airflow variables set execution_environment dev
-          airflow variables set bigquery_project sipher-data-testing
         "
         
   flower:
