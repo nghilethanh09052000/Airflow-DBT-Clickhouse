@@ -25,8 +25,8 @@ jobs:
 
     - name: Sync requirements.txt to VM
       run: |
-        rsync -avz -e "ssh -o StrictHostKeyChecking=no" ./requirements.txt ${{ env.SSH_USER_HOST }}:/path/to/airflow/requirements.txt
+        rsync -avz -e "ssh -o StrictHostKeyChecking=no" ./requirements.txt ${{ env.SSH_USER_HOST }}:/root/airflow/requirements.txt
 
     - name: Install Python packages
       run: |
-        ssh -o StrictHostKeyChecking=no ${{ env.SSH_USER_HOST }} "pip install -r /path/to/airflow/requirements.txt"
+        ssh -o StrictHostKeyChecking=no ${{ env.SSH_USER_HOST }} "pip install -r /root/airflow/requirements.txt"
