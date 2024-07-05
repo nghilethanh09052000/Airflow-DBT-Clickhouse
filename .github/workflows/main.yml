@@ -1,0 +1,32 @@
+name: Deploy DAGs
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+  SSH_USER_HOST: ${{ secrets.SSH_USER_HOST }}
+  SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Setup SSH
+      uses: webfactory/ssh-agent@v0.5.3
+      with:
+        ssh-private-key: ${{ env.SSH_PRIVATE_KEY }}
+
+    - name: Sync requirements.txt to VM
+      run: |
+        rsync -avz -e "ssh -o StrictHostKeyChecking=no" ./requirements.txt ${{ env.SSH_USER_HOST }}:/path/to/airflow/requirements.txt
+
+    - name: Install Python packages
+      run: |
+        ssh -o StrictHostKeyChecking=no ${{ env.SSH_USER_HOST }} "pip install -r /path/to/airflow/requirements.txt"
